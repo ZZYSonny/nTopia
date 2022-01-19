@@ -1,0 +1,15 @@
+ffmpeg \
+  -i /dev/video0 \
+  -g 30 \
+  -seg_duration 3 \
+  -frag_duration 1 \
+  -frag_type duration \
+  -ldash 1 \
+  -use_template 1 \
+  -use_timeline 0 \
+  -utc_timing_url "https://time.akamai.com/?iso" \
+  -tune zerolatency \
+  -streaming 1 \
+  -method PUT \
+  -http_persistent 1 \
+  -f dash http://127.0.0.1:8080/ldash/stream.mpd
