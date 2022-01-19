@@ -10,8 +10,10 @@ import (
 //The writer allows to create a reader that reads
 //all past bytes and future bytes.
 type CachedWriter struct {
+	//mutex
+	//mutex sync.Mutex
 	//bytes received so far
-	data   []byte
+	data []byte
 	//if the writer is closed
 	closed bool
 }
@@ -44,6 +46,11 @@ func (w *CachedWriter) Close() error {
 	return nil
 }
 
+func (w *CachedWriter) Clear() {
+	w.data = w.data[:0]
+	w.closed = false
+}
+
 //Create a reader that reads all written bytes afresh
 func (w *CachedWriter) CreateReader() io.Reader {
 	return &CachedReader{
@@ -53,7 +60,8 @@ func (w *CachedWriter) CreateReader() io.Reader {
 }
 
 func (r *CachedReader) Read(p []byte) (n int, err error) {
-	w := *r.source
+	w := r.source
+	//log.Println(w.closed, len(w.data), r.lastRead)
 	//if no more bytes will come and all bytes is read
 	if w.closed && len(w.data) == r.lastRead {
 		//EOF
@@ -72,34 +80,42 @@ func (r *CachedReader) Read(p []byte) (n int, err error) {
 const windowsize = 30
 
 //Windowed cache
-type ChunkWindowedCache struct{
-	mutex sync.Mutex
-	cur int
-	k[windowsize] string
-	v[windowsize] *CachedWriter
+type ChunkWindowedCache struct {
+	mutex  sync.Mutex
+	cur    int
+	path   [windowsize]string
+	writer [windowsize]CachedWriter
 }
 
 func CreateWindowedCache() *ChunkWindowedCache {
 	return &ChunkWindowedCache{}
 }
 
-func (c *ChunkWindowedCache) CacheAdd(url string, cache *CachedWriter){
+func (c *ChunkWindowedCache) Allocate(url string) *CachedWriter {
 	c.mutex.Lock()
-	c.k[c.cur]=url
-	c.v[c.cur]=cache
-	c.cur=(c.cur+1)%windowsize
+
+	c.path[c.cur] = url
+	ans := &c.writer[c.cur]
+	ans.Clear()
+	c.cur = (c.cur + 1) % windowsize
+
 	c.mutex.Unlock()
+	return ans
 }
 
-func (c *ChunkWindowedCache) CacheFind(url string) *CachedWriter{
+func (c *ChunkWindowedCache) Find(url string) *CachedWriter {
 	c.mutex.Lock()
-	for i:=0; i<windowsize; i++ {
-		if c.k[i]==url {
-			ans:=c.v[i]
+	for i := 0; i < windowsize; i++ {
+		if c.path[i] == url {
+			ans := &c.writer[i]
 			c.mutex.Unlock()
 			return ans
 		}
 	}
 	c.mutex.Unlock()
 	return nil
+}
+
+func (c *ChunkWindowedCache) Restart()  {
+	c.cur=0
 }
