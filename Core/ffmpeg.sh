@@ -1,6 +1,7 @@
 ffmpeg \
-  -input_format mjpeg -video_size 1280x720 -framerate 30 -i /dev/video0 \
-  -c:v libx264 -vf format=yuv420p -g 30 \
+  -input_format mjpeg -video_size 640x480 -framerate 10 -i /dev/video0 \
+  -c:v libx264 -vf format=yuv420p\
+  -g 10 -force_key_frames "expr:gte(t,n_forced*10)"\
   -seg_duration 2 \
   -ldash 1 \
   -use_template 1 \

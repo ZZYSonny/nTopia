@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <title>Low latency streaming - Testplayer</title>
 
-    <script src="../../../dist/dash.all.debug.js"></script>
+    <script src="../dist/dash.all.debug.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js"></script>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
-    <link href="../../lib/main.css" rel="stylesheet">
+    <link href="../lib/main.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
 
 </head>
@@ -20,7 +20,7 @@
     <div class="container py-4">
         <header class="pb-3 mb-4 border-bottom">
             <img class=""
-                 src="../../lib/img/dashjs-logo.png"
+                 src="../lib/img/dashjs-logo.png"
                  width="200">
         </header>
         <div class="row">
@@ -223,7 +223,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Manifest URL</span>
                     <input type="text" id="manifest" class="form-control" placeholder="MPD URL"
-                           value="https://cmafref.akamaized.net/cmaf/live-ull/2006350/akambr/out.mpd"
+                           value="http://127.0.0.1:8080/ldash/stream.mpd"
                            aria-label="Username"
                            aria-describedby="basic-addon1">
                     <button type="button" id="load-button" class="btn btn-success">Load stream
